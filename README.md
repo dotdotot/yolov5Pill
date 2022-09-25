@@ -1,14 +1,14 @@
--cv2
-pip install opencv-python
--sklearn
-pip install scikit-learn
--matplotlib
-pip install matplotlib
+- cv2<br>
+pip install opencv-python<br>
+- sklearn<br>
+pip install scikit-learn<br>
+- matplotlib<br>
+pip install matplotlib<br>
 
 -------------
 
 css
-- pandas
-pip install pandas
-- seaborn
-pip install seaborn
+- pandas<br>
+pip install pandas<br>
+- seaborn<br>
+pip install seaborn<br>
