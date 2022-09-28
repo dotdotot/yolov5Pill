@@ -8,6 +8,14 @@ import os
 import PIL
 import shutil
 
+from tensorflow.compat.v1 import ConfigProto
+from tensorflow.compat.v1 import InteractiveSession
+def fix_gpu():
+    config = ConfigProto()
+    config.gpu_options.allow_growth = True
+    session = InteractiveSession(config=config)
+fix_gpu()
+
 # 기본 경로
 base_dir = 'C:\\vsCode\PillProject\image\shape\\'
 train_dir = os.path.join(base_dir, 'train')
@@ -100,8 +108,8 @@ train_datagen = ImageDataGenerator(rescale = 1./255, # 모든 이미지 원소�
                                    height_shift_range=0.05, # 0.05범위 내에서 임의의 값만큼 임의의 방향으로 상하 이동
                                    zoom_range=0.2, # (1-0.2)~(1+0.2) => 0.8~1.2 사이에서 임의의 수치만큼 확대/축소
                                    horizontal_flip=True, # 좌우로 뒤집기                                   
-                                   vertical_flip=True,
-                                   fill_mode='nearest'
+                                   vertical_flip=True, # vertical_flip: 불리언. 인풋을 무작위로 세로로 뒤집습니다.
+                                   fill_mode='nearest' # fill_mode 이미지를 회전, 이동하거나 축소할 때 생기는 공간을 채우는 방식
                                   ) 
 # validation 및 test 이미지는 augmentation을 적용하지 않는다;
 # 모델 성능을 평가할 때에는 이미지 원본을 사용 (rescale만 진행)
@@ -112,18 +120,25 @@ test_datagen = ImageDataGenerator(rescale = 1./255)
 # 변환된 이미지 데이터 생성
 train_generator = train_datagen.flow_from_directory(train_dir, 
                                                     batch_size=16, # 한번에 변환된 이미지 16개씩 만들어라 라는 것
-                                                    color_mode='grayscale', # 흑백 이미지 처리
-                                                    class_mode='binary', 
+                                                    # color_mode: "grayscale"과 "rbg" 중 하나. 디폴트 값: "rgb". 이미지가 1개 혹은 3개의 색깔 채널을 갖도록 변환할지 여부.
+                                                    color_mode='rgba', # 흑백 이미지 처리
+# class_mode: "categorical", "binary", "sparse", "input", 혹은 None 중 하나. 디폴트 값: "categorical". 반환될 라벨 배열의 종류를 결정합니다:
+# "categorical"은 2D형태의 원-핫 인코딩된 라벨입니다,
+# "binary"는 1D 형태의 이진 라벨입니다, "sparse"는 1D 형태의 정수 라벨입니다,
+# "input"은 인풋 이미지와 동일한 이미지입니다 (주로 자동 인코더와 함께 사용합니다).
+# None의 경우, 어떤 라벨되 반환되지 않습니다 (생성자가 이미지 데이터의 배치만 만들기 때문에, model.predict_generator(), model.evaluate_generator() 등과 함께 사용하는 것이 유용합니다). 
+# class_mode가 None일 경우, 제대로 작동하려면 데이터가 directory 내 하위 디렉토리에 위치해야 한다는 점을 유의하십시오.
+                                                    class_mode='categorical', 
                                                     target_size=(150,150)) # target_size에 맞춰서 이미지의 크기가 조절된다
 validation_generator = validation_datagen.flow_from_directory(validation_dir, 
                                                               batch_size=4, 
-                                                              color_mode='grayscale',
-                                                              class_mode='binary', 
+                                                              color_mode='rgba',
+                                                              class_mode='categorical', 
                                                               target_size=(150,150))
 test_generator = test_datagen.flow_from_directory(test_dir,
                                                   batch_size=4,
-                                                  color_mode='grayscale',
-                                                  class_mode='binary',
+                                                  color_mode='rgba',
+                                                  class_mode='categorical',
                                                   target_size=(150,150))
 # 참고로, generator 생성시 batch_size x steps_per_epoch (model fit에서) <= 훈련 샘플 수 보다 작거나 같아야 한다.
 
@@ -171,23 +186,24 @@ from tensorflow.keras.optimizers import RMSprop
 
 # compile() 메서드를 이용해서 손실 함수 (loss function)와 옵티마이저 (optimizer)를 지정
 model.compile(optimizer=RMSprop(learning_rate=0.001), # 옵티마이저로는 RMSprop 사용
-              loss='binary_crossentropy', # 손실 함수로 ‘binary_crossentropy’ 사용
+            #   Multi-class classification 즉 클래스가 여러 개인 다중 분류 문제에서 사용
+              loss='categorical_crossentropy', # 손실 함수로 categorical_crossentropy 사용
               metrics= ['accuracy'])
 # RMSprop (Root Mean Square Propagation) Algorithm: 훈련 과정 중에 학습률을 적절하게 변화시킨다.
 
-# # 모델 훈련
-# history = model.fit_generator(train_generator, # train_generator안에 X값, y값 다 있으니 generator만 주면 된다
-#                               validation_data=validation_generator, # validatino_generator안에도 검증용 X,y데이터들이 다 있으니 generator로 주면 됨
-#                               steps_per_epoch=4, # 한 번의 에포크(epoch)에서 훈련에 사용할 배치(batch)의 개수 지정; generator를 4번 부르겠다
-#                               epochs=100, # 데이터셋을 한 번 훈련하는 과정; epoch은 100 이상은 줘야한다
-#                               validation_steps=4, # 한 번의 에포크가 끝날 때, 검증에 사용되는 배치(batch)의 개수를 지정; validation_generator를 4번 불러서 나온 이미지들로 작업을 해라
-#                               verbose=2)
-# # 참고: validation_steps는 보통 내가 원하는 이미지 수에 flow할 때 지정한 batchsize로 나눈 값을 validation_steps로 지정
+# 모델 훈련
+history = model.fit_generator(train_generator, # train_generator안에 X값, y값 다 있으니 generator만 주면 된다
+                              validation_data=validation_generator, # validatino_generator안에도 검증용 X,y데이터들이 다 있으니 generator로 주면 됨
+                              steps_per_epoch=4, # 한 번의 에포크(epoch)에서 훈련에 사용할 배치(batch)의 개수 지정; generator를 4번 부르겠다
+                              epochs=100, # 데이터셋을 한 번 훈련하는 과정; epoch은 100 이상은 줘야한다
+                              validation_steps=4, # 한 번의 에포크가 끝날 때, 검증에 사용되는 배치(batch)의 개수를 지정; validation_generator를 4번 불러서 나온 이미지들로 작업을 해라
+                              verbose=2)
+# 참고: validation_steps는 보통 내가 원하는 이미지 수에 flow할 때 지정한 batchsize로 나눈 값을 validation_steps로 지정
 
 
-# # 모델 성능 평가
-# model.evaluate(train_generator)
-# model.evaluate(validation_generator)
+# 모델 성능 평가
+model.evaluate(train_generator)
+model.evaluate(validation_generator)
 
 # # 정확도 및 손실 시각화
 # acc = history.history['accuracy']
