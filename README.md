@@ -9,9 +9,11 @@ yolo 커스텀 데이터셋 학습시키기(colab)</br>
 
 1. 드라이브 마운트</br>
 <code>
-    # 드라이브 마운트</br>
-    from google.colab import drive</br>
-    drive.mount('/content/drive')</br>
+    #드라이브 마운트</br>
+
+    from google.colab import drive
+
+    drive.mount('/content/drive')
 </code></br></br>
 
 2. 환경 세팅</br>
