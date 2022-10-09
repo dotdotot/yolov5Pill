@@ -226,13 +226,16 @@ os.listdir()을 사용하여 경로 내에 있는 파일의 이름을 리스트�
     print('Total test blue images :', len(os.listdir(test_blue_dir)))  
 
 </code>  
+
 ![제목 없음](https://user-images.githubusercontent.com/77331459/194784686-c3704c6c-f58c-44ba-87ad-71e0fa3f3d9a.png)  
   
-
-
+  
+  
 이미지 확인  
+
 <code>
     import matplotlib.pyplot as plt  
+
     import matplotlib.image as mpimg  
       
     nrows, ncols = 4, 4  
@@ -259,25 +262,39 @@ os.listdir()을 사용하여 경로 내에 있는 파일의 이름을 리스트�
     plt.show()  
 
 </code>  
+
 ![제목 없음1](https://user-images.githubusercontent.com/77331459/194784768-71ddcf50-c429-48e0-99b5-d4625466bf2d.png)  
   
 
 이미지 데이터 전처리  
-데이터가 부족하다고 생각했습니다. 적은 수의 이미지에서 모델이 최대한 많은 정보를 뽑아내서 학습할 수 있도록, augmentation을 적용하였습니다.  
+
+데이터가 부족하다고 생각했습니다. 
+
+적은 수의 이미지에서 모델이 최대한 많은 정보를 뽑아내서 학습할 수 있도록, augmentation을 적용하였습니다.  
+
 Augmentation이라는 것은, 이미지를 사용할 때마다 임의로 변형을 가함으로써 마치 훨씬 더 많은 이미지를 보고 공부하는 것과 같은 학습 효과를 내게 해줍니다.  
+
 기존의 데이터의 정보량을 보존한 상태로 노이즈를 주는 방식인데, 이는 다시 말하면, 내가 가지고 있는 정보량은 변하지 않고 단지 정보량에 약간의 변화를 주는 것으로, 딥러닝으로 분석된 데이터의 강하게 표현되는 고유의 특징을 조금 느슨하게 만들어는 것이라고 생각하면 됩니다.   
+
 Augmentation을 통해 결과적으로 과적합(오버피팅)을 막아 모델이 학습 데이터에만 맞춰지는 것을 방지하고, 새로운 이미지도 잘 분류할 수 있게 만들어 예측 범위도 넓혀줄 수 있습니다.  
+
 이런 전처리 과정을 돕기 위해 케라스는 ImageDataGenerator 클래스를 제공합니다. ImageDataGenerator는 아래와 같은 일을 할 수 있습니다  
+
 * 학습 과정에서 이미지에 임의 변형 및 정규화 적용  
 * 변형된 이미지를 배치 단위로 불러올 수 있는 generator 생성  
 - generator를 생성할 때 flow(data, labels), flow_from_directory(directory) 두 가지 함수를 사용 할 수 있습니다.  
 - fit_generator(fit), evaluate_generator 함수를 사용하여 generator로 이미지를 불러와 모델을 학습시키고 평가 할 수 있습니다.  
   
 이미지 데이터 생성  
+
 ImageDataGenerator를 통해서 데이터를 만들어줄 것입니다.   
+
 어떤 방식으로 데이터를 증식시킬 것인지 아래와 같은 옵션을 통해서 설정합니다.    
+
 참고로, augmentation은 train 데이터에만 적용시켜야 하고, validation 및 test 이미지는 augmentation을 적용하지 않습니다.  
+
 모델 성능을 평가할 때에는 이미지 원본을 사용해야 하기에 rescale만 적용해 정규화하고 진행합니다  
+
 <code>
 # 이미지 데이터 전처리
 from tensorflow.keras.preprocessing import image
@@ -302,8 +319,11 @@ from tensorflow.keras.preprocessing.image import ImageDataGenerator
 </code>  
 
 이미지 데이터 수가 적어서, batch_size를 결정하는 것에 여러 시행착오와 어려움이 있을것이라고 생각했습니다.  
+
 Generator 생성시 batch_size와 steps_per_epoch(model fit할 때)를 곱한 값이 훈련 샘플 수 보다 작거나 같아야 합니다.   
+
 이에 맞춰, flow_from_directory() 옵션에서 batch_size와 model fit()/fit_generator() 옵션의 steps_per_epoch 값을 조정해 가며 학습을 시도하였습니다.  
+
 <code>
     #flow_from_directory() 메서드를 이용해서 훈련과 테스트에 사용될 이미지 데이터를 만들기
     #변환된 이미지 데이터 생성
@@ -332,17 +352,22 @@ Generator 생성시 batch_size와 steps_per_epoch(model fit할 때)를 곱한 �
 </code>
   
 모델 구성  
+
 합성곱 신경망 모델을 구성합니다.  
+
 ![image](https://user-images.githubusercontent.com/77331459/194784951-18705042-9f54-43c5-9982-4844afe8e629.png)  
   
 모델 학습  
+
 모델 컴파일 단계에서는 compile() 메서드를 이용해서 손실 함수(loss function)와 옵티마이저(optimizer)를 지정합니다.  
+
 * 손실 함수로 ‘binary_crossentropy’를 사용했습니다.(변경 예정)
 * 또한, 옵티마이저로는 RMSprop을 사용했습니다. RMSprop(Root Mean Square Propagation) 알고리즘은 훈련 과정 중에 학습률을 적절하게 변화시켜 줍니다.  
 * 훈련과 테스트를 위한 데이터셋인 train_generator, validation_generator를 입력합니다.
 * epochs는 데이터셋을 한 번 훈련하는 과정을 의미합니다.
 * steps_per_epoch는 한 번의 에포크 (epoch)에서 훈련에 사용할 배치 (batch)의 개수를 지정합니다.
 * validation_steps는 한 번의 에포크가 끝날 때, 테스트에 사용되는 배치 (batch)의 개수를 지정합니다.
+
 <code>  
     from tensorflow.keras.optimizers import RMSprop  
   
@@ -367,7 +392,9 @@ Generator 생성시 batch_size와 steps_per_epoch(model fit할 때)를 곱한 �
   
   
 결과 확인 및 평가  
+
 학습된 모델 결과와 성능을 확인합니다.  
+
 <code>
     # 모델 성능 평가  
     model.evaluate(train_generator)  
@@ -378,7 +405,9 @@ Generator 생성시 batch_size와 steps_per_epoch(model fit할 때)를 곱한 �
   
     
 정확도 및 손실 시각화  
+
 훈련 과정에서 epoch에 따른 정확도와 손실을 시각화화여 확인합니다.  
+
 <code>
     # 정확도 및 손실 시각화  
     acc = history.history['accuracy']  
@@ -403,9 +432,11 @@ Generator 생성시 batch_size와 steps_per_epoch(model fit할 때)를 곱한 �
     plt.show()  
     
 </code>
+
 ![image (1)](https://user-images.githubusercontent.com/77331459/194785124-827a1941-125f-4912-b36a-17be341d4d54.png)  
   
 테스트 평가  
+
 - 아직 평가하지않음
 
 # Shape  
@@ -415,7 +446,9 @@ color와 동일한 cnn모델을 사용하였음
 ![다운로드 (3)](https://user-images.githubusercontent.com/77331459/194784410-d8690c98-46e6-429f-8125-36897550d5d6.png)  
 
 OCR은 Optical Character Recognition의 약자로 사람이 쓰거나 기계로 인쇄한 문자의 영상을 이미지 스캐너로 획득하여 기계가 읽을 수 있는 문자로 변환하는 것을 뜻한다.  
+
 파이썬에서 사용할 라이브러리는 pytesseract이다.  
+
 <code>
 테서랙트(Tesseract)는 다양한 운영 체제를 위한 광학 문자 인식 엔진이다. 이 소프트웨어는 Apache License, 버전 2.0,에 따라 배포되는 무료 소프트웨어이며 2006년부터 Google에서 개발을 후원했다.
 </code>  
