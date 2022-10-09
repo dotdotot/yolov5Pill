@@ -100,6 +100,14 @@ training 시키기 전에 항상 이 코드를 실행해준다
 를 실행하면 훈련이 시작된다.  
 
 훈련이 시작되고 완료되면 어느 폴더에 .pt파일이 생성이 되었는지 확인가능하다.  
+  
+  
+7. yolov5 실행  
+cd /content/drive/MyDrive/yolov5 코드를 실행해 .pt파일이 존재하는 위치로 이동한다  
+#사용  
+
+!python detect.py --img 640 --weights "/content/yolov5/runs/train/coustomYolov5m/weights/best.pt" --source "/content/drive/MyDrive/testImages"  
+
 
 
 # Color
