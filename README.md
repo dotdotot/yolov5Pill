@@ -15,20 +15,19 @@ yolo 커스텀 데이터셋 학습시키기(colab)</br>
 </code></br></br>
 
 2. 환경 세팅</br>
-<code>
+
 내 구글 드라이브로 이동</br>
 %cd "/content/drive/MyDrive"</br>
 Yolov5 github 레포지토리 clone</br>
 !git clone https://github.com/ultralytics/yolov5.git</br>
 필요한 모듈 설치</br>
 !pip install -U -r yolov5/requirements.txt</br>
-</code></br>
+</br>
 
-<code>
 import torch</br>
 #파이토치 버전 확인, cuda device properties 확인</br>
 print('torch %s %s' % (torch.__version__, torch.cuda.get_device_properties(0) if torch.cuda.is_available() else 'CPU'))</br>
-</code></br></br>
+</br>
 런타임 -> 런타임 유형 변경에 들어가서 하드웨어 가속기 GPU로 변경</br></br>
 이후 custom 모델에 사용할 데이터 수집하기</br></br>
 
