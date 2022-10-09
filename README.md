@@ -41,38 +41,66 @@ yolo 커스텀 데이터셋 학습시키기(colab)</br>
 이후 custom 모델에 사용할 데이터 수집하기</br>
 
 3. data.yaml 파일 생성</br>
-data.yaml : 모델 학습을 위한 작은 튜토리얼 같은 것 (내 드라이브/dataset 아래에 만들어준다)</br>
--- 이미지(다운로드) -- </br>
-파일의 내용은 그림과 같이 적어주면 된다.</br>
-class가 여러개라면 nc의 개수를 class의 개수만큼 지정하고 names 배열 내부에 class 이름을 적어주면 된다.</br>
-즉, nc는 자신이 학습시키고자 하는 클래스의 수(number)고</br>
-names에는 그 클래스의  이름을 배열로 적어주면 됨</br>
-여러개일 경우 ['class1','class2'] 처럼..</br></br>
+data.yaml : 모델 학습을 위한 작은 튜토리얼 같은 것 (내 드라이브/dataset 아래에 만들어준다)  
 
-4.  labels/images 폴더 정리해주기</br>
-2번에서 만들어놨던 내 데이터셋들을 모두 정리해줘야한다.</br>
-images/train 에는 훈련시키고자 하는 image들을 넣고</br>
-images/val 에는 validation에 사용되는 image들, </br>
-labels/train  훈련시키는 image의 바운딩 박스 정보가 저장된 txt파일들</br>
-labels/val 에는  validation에 사용되는  image의 바운딩 박스 정보 txt파일들 을 모두 업로드 해준다.</br>
+-- 이미지(다운로드) --  
 
-5. 모델 선택하기</br>
--- 이미지(다운로드1) -- </br></br>
-yolov5/models 에 여러 파일들이 있다. 그 중 하나 선택하여 해당 파일 내용중 nc 를 자신이 학습시키고자 하는 클래스 개수로 바꾼다.</br>
--- 이미지(다운로드2) -- </br></br>
+파일의 내용은 그림과 같이 적어주면 된다.  
 
-6. training 시키기 !!</br>
-training 시키기 전에 항상 이 코드를 실행해준다</br>
+class가 여러개라면 nc의 개수를 class의 개수만큼 지정하고 names 배열 내부에 class 이름을 적어주면 된다.  
+
+즉, nc는 자신이 학습시키고자 하는 클래스의 수(number)고  
+
+names에는 그 클래스의  이름을 배열로 적어주면 됨  
+
+여러개일 경우 ['class1','class2'] 처럼..    
+
+
+
+4.  labels/images 폴더 정리해주기  
+
+2번에서 만들어놨던 내 데이터셋들을 모두 정리해줘야한다.  
+
+images/train 에는 훈련시키고자 하는 image들을 넣고  
+
+images/val 에는 validation에 사용되는 image들,   
+
+labels/train  훈련시키는 image의 바운딩 박스 정보가 저장된 txt파일들  
+
+labels/val 에는  validation에 사용되는  image의 바운딩 박스 정보 txt파일들 을 모두 업로드 해준다.  
+
+
+5. 모델 선택하기  
+
+-- 이미지(다운로드1) --     
+
+
+yolov5/models 에 여러 파일들이 있다. 그 중 하나 선택하여 해당 파일 내용중 nc 를 자신이 학습시키고자 하는 클래스 개수로 바꾼다.  
+
+-- 이미지(다운로드2) --      
+
+
+
+6. training 시키기 !!  
+
+training 시키기 전에 항상 이 코드를 실행해준다  
+
 <code>
     !pip install -U PyYAML
-</code>
-코드를 통해 yolov5 디렉토리로 이동</br>
+</code>  
+
+코드를 통해 yolov5 디렉토리로 이동  
+
 <code>
     %cd /content/drive/My\ Drive/yolov5
-</code>
-!python train.py --img 640 --batch 30 --epochs 100 --data /content/drive/My\ Drive/dataset/data.yaml --cfg ./models/yolov5s.yaml --weights yolov5s.pt --name [내가 정한 폴더명]</br>
-를 실행하면 훈련이 시작된다.</br>
-훈련이 시작되고 완료되면 어느 폴더에 .pt파일이 생성이 되었는지 확인가능하다.</br>
+</code>  
+
+!python train.py --img 640 --batch 30 --epochs 100 --data /content/drive/My\ Drive/dataset/data.yaml --cfg ./models/yolov5s.yaml --weights yolov5s.pt --name [내가 정한 폴더명]  
+
+를 실행하면 훈련이 시작된다.  
+
+훈련이 시작되고 완료되면 어느 폴더에 .pt파일이 생성이 되었는지 확인가능하다.  
+
 
 # Color
 
