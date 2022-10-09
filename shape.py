@@ -8,13 +8,13 @@ import os
 import PIL
 import shutil
 
-from tensorflow.compat.v1 import ConfigProto
-from tensorflow.compat.v1 import InteractiveSession
-def fix_gpu():
-    config = ConfigProto()
-    config.gpu_options.allow_growth = True
-    session = InteractiveSession(config=config)
-fix_gpu()
+# from tensorflow.compat.v1 import ConfigProto
+# from tensorflow.compat.v1 import InteractiveSession
+# def fix_gpu():
+#     config = ConfigProto()
+#     config.gpu_options.allow_growth = True
+#     session = InteractiveSession(config=config)
+# fix_gpu()
 
 # 기본 경로
 base_dir = 'C:\\vsCode\PillProject\image\shape\\'
@@ -205,24 +205,24 @@ history = model.fit_generator(train_generator, # train_generator안에 X값, y�
 model.evaluate(train_generator)
 model.evaluate(validation_generator)
 
-# # 정확도 및 손실 시각화
-# acc = history.history['accuracy']
-# val_acc = history.history['val_accuracy']
-# loss = history.history['loss']
-# val_loss = history.history['val_loss']
+# 정확도 및 손실 시각화
+acc = history.history['accuracy']
+val_acc = history.history['val_accuracy']
+loss = history.history['loss']
+val_loss = history.history['val_loss']
 
-# epochs = range(len(acc))
+epochs = range(len(acc))
 
-# plt.plot(epochs, acc, 'bo', label='Training accuracy')
-# plt.plot(epochs, val_acc, 'b', label='Validation accuracy')
-# plt.title('Training and validation accuracy')
-# plt.legend()
+plt.plot(epochs, acc, 'bo', label='Training accuracy')
+plt.plot(epochs, val_acc, 'b', label='Validation accuracy')
+plt.title('Training and validation accuracy')
+plt.legend()
 
-# plt.figure()
+plt.figure()
 
-# plt.plot(epochs, loss, 'go', label='Training loss')
-# plt.plot(epochs, val_loss, 'g', label='Validation loss')
-# plt.title('Training and validation loss')
-# plt.legend()
+plt.plot(epochs, loss, 'go', label='Training loss')
+plt.plot(epochs, val_loss, 'g', label='Validation loss')
+plt.title('Training and validation loss')
+plt.legend()
 
-# plt.show()
+plt.show()
