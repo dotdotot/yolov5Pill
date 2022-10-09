@@ -43,7 +43,7 @@ yolo 커스텀 데이터셋 학습시키기(colab)</br>
 3. data.yaml 파일 생성</br>
 data.yaml : 모델 학습을 위한 작은 튜토리얼 같은 것 (내 드라이브/dataset 아래에 만들어준다)  
 
--- 이미지(다운로드) --  
+![다운로드](https://user-images.githubusercontent.com/77331459/194784144-00d6d2a6-9074-4eed-9f9b-6cca9decdd79.png)  
 
 파일의 내용은 그림과 같이 적어주면 된다.  
 
@@ -72,12 +72,12 @@ labels/val 에는  validation에 사용되는  image의 바운딩 박스 정보 
 
 5. 모델 선택하기  
 
--- 이미지(다운로드1) --     
+![다운로드 (1)](https://user-images.githubusercontent.com/77331459/194784149-35ee09f9-91a9-42a0-917b-6b39c85f147d.png)   
 
 
 yolov5/models 에 여러 파일들이 있다. 그 중 하나 선택하여 해당 파일 내용중 nc 를 자신이 학습시키고자 하는 클래스 개수로 바꾼다.  
 
--- 이미지(다운로드2) --      
+![다운로드 (2)](https://user-images.githubusercontent.com/77331459/194784150-8db0c7dc-515d-4467-8408-dd77a975670a.png)    
 
 
 
