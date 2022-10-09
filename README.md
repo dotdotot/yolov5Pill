@@ -14,7 +14,7 @@ yolo 커스텀 데이터셋 학습시키기(colab)</br>
     from google.colab import drive
 
     drive.mount('/content/drive')
-</code></br></br>
+</code>
 
 2. 환경 세팅</br>
 
