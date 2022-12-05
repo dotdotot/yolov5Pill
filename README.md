@@ -392,14 +392,16 @@ Generator 생성시 batch_size와 steps_per_epoch(model fit할 때)를 곱한 �
   
   
 결과 확인 및 평가  
-
 학습된 모델 결과와 성능을 확인합니다.  
 
 <code>
+
     # 모델 성능 평가  
     model.evaluate(train_generator)  
 </code>  
+
 <code>
+
     model.evaluate(validation_generator)        
 </code>  
   
@@ -409,6 +411,7 @@ Generator 생성시 batch_size와 steps_per_epoch(model fit할 때)를 곱한 �
 훈련 과정에서 epoch에 따른 정확도와 손실을 시각화화여 확인합니다.  
 
 <code>
+
     # 정확도 및 손실 시각화  
     acc = history.history['accuracy']  
     val_acc = history.history['val_accuracy']  
@@ -436,11 +439,720 @@ Generator 생성시 batch_size와 steps_per_epoch(model fit할 때)를 곱한 �
 ![image (1)](https://user-images.githubusercontent.com/77331459/194785124-827a1941-125f-4912-b36a-17be341d4d54.png)  
   
 테스트 평가  
+#
 
-- 아직 평가하지않음
+- datagenImage1 
+
+- epoch 50 , patience=5
+batchsize 4
+iterations 5
+
+테스트용
+<code>
+
+    ImageDataGenerator(
+        rotation_range = 20,
+        width_shift_range = 0.2,
+        height_shift_range = 0.2)
+    testImage folder = vsCode\\PillProject\\imageT\\color\\test
+    target_size = 256,256
+    batchsize = 4
+    class_mode = categorical
+</code>
+
+훈련용(설정은 위와 동일)</br>
+trainImage folder = vsCode\\PillProject\\imageT\\color\\train</br>
+
+batch_size = 64</br>
+num_classes = 5</br>
+epochs = 50</br>
+
+
+<img width="373" alt="datagenImage1학습이미지(patience=5)" src="https://user-images.githubusercontent.com/77331459/205564571-cd6c7f15-97ae-4b2a-bdf4-6480d578ab82.png">
+
+신경망 구성
+
+<code>
+
+    model = keras.Sequential([
+        Conv2D(32, kernel_size = (3,3), padding = 'same', input_shape = train_images.shape[1:],
+            activation=tf.nn.relu),
+        MaxPooling2D(pool_size=(2,2)),
+        Dropout(0.25),
+
+        Conv2D(64, kernel_size = (3,3), padding = 'same', activation=tf.nn.relu),
+        MaxPooling2D(pool_size=(2,2)),
+        Dropout(0.25),
+        
+        Flatten(),
+        Dense(64, activation=tf.nn.relu),
+        Dropout(0.25),
+        Dense(num_classes, activation=tf.nn.softmax)
+    ])
+</code>
+
+<code>
+
+    model.compile(
+        loss='categorical_crossentropy',
+        optimizer = 'adam',
+        metrics=['accuracy']
+    )<
+</code>
+
+<code>
+
+    early_stopping=EarlyStopping(monitor='val_loss', patience=5)
+    history = model.fit(
+        train_images, train_labels,
+        epochs=epochs,
+        validation_data=(test_images, test_labels),
+        shuffle=True,
+        callbacks=[early_stopping]
+    )
+</code>
+
+18에서 학습중지 (최대 50)</br>
+Loss : 0.7770828008651733, Acc : 0.8653846383094788</br>
+
+<img width="251" alt="datagenImage1결과(patience=5)" src="https://user-images.githubusercontent.com/77331459/205564584-c17a2b86-9722-4c62-953a-81a6a01105e8.png">
+
+<img width="454" alt="datagenImage1검증(patience=5)" src="https://user-images.githubusercontent.com/77331459/205564559-34f99053-f66f-443a-a9f5-1c9966a490b2.png">
+
+#
+
+- datagenImage1 
+
+- epoch 50 , patience = 10
+batchsize 4
+iterations 5
+
+테스트용
+<code>
+
+    ImageDataGenerator(
+        rotation_range = 20,
+        width_shift_range = 0.2,
+        height_shift_range = 0.2)
+    testImage folder = vsCode\\PillProject\\imageT\\color\\test
+    target_size = 256,256
+    batchsize = 4
+    class_mode = categorical
+</code>
+
+훈련용(설정은 위와 동일)</br>
+trainImage folder = vsCode\\PillProject\\imageT\\color\\train</br>
+
+batch_size = 64</br>
+num_classes = 5</br>
+epochs = 50</br>
+
+<img width="370" alt="datagenImage1학습이미지(patience=10)" src="https://user-images.githubusercontent.com/77331459/205564671-0d98e75f-9e3c-4e3b-b054-6f1b21ad5345.png">
+
+신경망 구성
+
+<code>
+
+    model = keras.Sequential([
+        Conv2D(32, kernel_size = (3,3), padding = 'same', input_shape = train_images.shape[1:],
+            activation=tf.nn.relu),
+        MaxPooling2D(pool_size=(2,2)),
+        Dropout(0.25),
+
+        Conv2D(64, kernel_size = (3,3), padding = 'same', activation=tf.nn.relu),
+        MaxPooling2D(pool_size=(2,2)),
+        Dropout(0.25),
+        
+        Flatten(),
+        Dense(64, activation=tf.nn.relu),
+        Dropout(0.25),
+        Dense(num_classes, activation=tf.nn.softmax)
+    ])
+</code>
+
+<code>
+
+    model.compile(
+        loss='categorical_crossentropy',
+        optimizer = 'adam',
+        metrics=['accuracy']
+    )<
+</code>
+
+<code>
+
+    early_stopping=EarlyStopping(monitor='val_loss', patience=5)
+    history = model.fit(
+        train_images, train_labels,
+        epochs=epochs,
+        validation_data=(test_images, test_labels),
+        shuffle=True,
+        callbacks=[early_stopping]
+    )
+</code>
+
+30에서 학습중지 (최대 50)</br>
+Loss : 2.2101550102233887, Acc : 0.699999988079071</br>
+
+<img width="248" alt="datagenImage1결과(patience=10)" src="https://user-images.githubusercontent.com/77331459/205564680-ce4f6eaa-4a2a-4025-b0af-ccfc39b8e297.png">
+
+<img width="465" alt="datagenImage1검증(patience=10)" src="https://user-images.githubusercontent.com/77331459/205564686-247119cc-75ac-4ded-a589-ed70fddf95f7.png">
+
+#
+
+- datagenImage1 
+
+- epoch 50 , patience = 20</br>
+batchsize 4 </br>
+iterations 5 </br>
+
+테스트용
+<code>
+
+    ImageDataGenerator(
+        rotation_range = 20,
+        width_shift_range = 0.2,
+        height_shift_range = 0.2)
+    testImage folder = vsCode\\PillProject\\imageT\\color\\test
+    target_size = 256,256
+    batchsize = 4
+    class_mode = categorical
+</code>
+
+훈련용(설정은 위와 동일)</br>
+trainImage folder = vsCode\\PillProject\\imageT\\color\\train</br>
+
+batch_size = 64</br>
+num_classes = 5</br>
+epochs = 50</br>
+
+<img width="374" alt="datagenImage1학습이미지(patience=20)" src="https://user-images.githubusercontent.com/77331459/205564637-c238ab2e-3059-48a1-8157-f7089819c56d.png">
+
+신경망 구성
+
+<code>
+
+    model = keras.Sequential([
+        Conv2D(32, kernel_size = (3,3), padding = 'same', input_shape = train_images.shape[1:],
+            activation=tf.nn.relu),
+        MaxPooling2D(pool_size=(2,2)),
+        Dropout(0.25),
+
+        Conv2D(64, kernel_size = (3,3), padding = 'same', activation=tf.nn.relu),
+        MaxPooling2D(pool_size=(2,2)),
+        Dropout(0.25),
+        
+        Flatten(),
+        Dense(64, activation=tf.nn.relu),
+        Dropout(0.25),
+        Dense(num_classes, activation=tf.nn.softmax)
+    ])
+</code>
+
+<code>
+
+    model.compile(
+        loss='categorical_crossentropy',
+        optimizer = 'adam',
+        metrics=['accuracy']
+    )<
+</code>
+
+<code>
+
+    early_stopping=EarlyStopping(monitor='val_loss', patience=20)
+    history = model.fit(
+        train_images, train_labels,
+        epochs=epochs,
+        validation_data=(test_images, test_labels),
+        shuffle=True,
+        callbacks=[early_stopping]
+    )
+</code>
+
+50까지 학습 완료 (최대 50)</br>
+Loss : 0.7318955659866333, Acc : 1.0</br>
+
+<img width="259" alt="datagenImage1결과(patience=20)" src="https://user-images.githubusercontent.com/77331459/205564626-ada0b971-d632-4b77-acfe-53f874463ee4.png">
+
+<img width="460" alt="datagenImage1검증(patience=20)" src="https://user-images.githubusercontent.com/77331459/205564646-fbd46928-91fa-4499-a46d-ccf3cc10869c.png">
+
+#
+
+- datagenImage2
+
+- epoch 50 , patience = 10</br>
+batchsize 4 </br>
+
+훈련용
+<code>
+
+    datagen = ImageDataGenerator(
+    featurewise_center = True)
+
+    datagen.flow_from_directory(
+    'C:\\vsCode\\PillProject\\imageT\\color\\test', 
+    shuffle = True, 
+    target_size=(256,256), 
+    batch_size=batch_size, 
+    class_mode = 'categorical')
+</code>
+
+테스트용(경로 제외 위와 동일)</br>
+C:\\vsCode\\PillProject\\imageT\\color\\train</br>
+
+num_classes = 5</br>
+epochs = 50</br>
+
+<img width="369" alt="datagenImage2학습이미지(patience=10)" src="https://user-images.githubusercontent.com/77331459/205564721-7181cb4f-7bc7-4973-b93c-859fb2358b7c.png">
+
+신경망 구성
+
+<code>
+
+    model = keras.Sequential([
+        Conv2D(32, kernel_size = (3,3), padding = 'same', input_shape = train_images.shape[1:],
+            activation=tf.nn.relu),
+        MaxPooling2D(pool_size=(2,2)),
+        Dropout(0.25),
+
+        Conv2D(64, kernel_size = (3,3), padding = 'same', activation=tf.nn.relu),
+        MaxPooling2D(pool_size=(2,2)),
+        Dropout(0.25),
+        
+        Flatten(),
+        Dense(64, activation=tf.nn.relu),
+        Dropout(0.25),
+        Dense(num_classes, activation=tf.nn.softmax)
+    ])
+</code>
+
+<code>
+
+    model.compile(
+        loss='categorical_crossentropy',
+        optimizer = 'adam',
+        metrics=['accuracy']
+    )<
+</code>
+
+<code>
+
+    early_stopping=EarlyStopping(monitor='val_loss', patience=30)
+
+    history = model.fit(
+        train_images, train_labels,
+        epochs=epochs,
+        validation_data=(test_images, test_labels),
+        shuffle=True,
+        callbacks=[early_stopping]
+    )
+</code>
+
+35까지 학습 완료 (최대 50)</br>
+Loss : 0.023338522762060165, Acc : 1.0</br>
+
+<img width="261" alt="datagenImage2결과(patience=10)" src="https://user-images.githubusercontent.com/77331459/205564730-979169c2-b521-4756-8a78-cd2607ae81f6.png">
+
+<img width="453" alt="datagenImage2검증(patience=10)" src="https://user-images.githubusercontent.com/77331459/205564736-e0b6c974-7fa4-43c3-8844-be7b84df4239.png">
+
+#
+
+- datagenImage2
+
+- epoch 50 , patience = 20</br>
+batchsize 4 </br>
+
+훈련용
+<code>
+
+    datagen = ImageDataGenerator(
+    featurewise_center = True)
+
+    datagen.flow_from_directory(
+    'C:\\vsCode\\PillProject\\imageT\\color\\test', 
+    shuffle = True, 
+    target_size=(256,256), 
+    batch_size=batch_size, 
+    class_mode = 'categorical')
+</code>
+
+테스트용(경로 제외 위와 동일)</br>
+C:\\vsCode\\PillProject\\imageT\\color\\train</br>
+
+num_classes = 5</br>
+epochs = 50</br>
+
+<img width="367" alt="datagenImage2학습이미지(patience = 20)" src="https://user-images.githubusercontent.com/77331459/205564745-cd704b5f-ca7a-49de-a24c-020d6dc42212.png">
+
+신경망 구성
+
+<code>
+
+    model = keras.Sequential([
+        Conv2D(32, kernel_size = (3,3), padding = 'same', input_shape = train_images.shape[1:],
+            activation=tf.nn.relu),
+        MaxPooling2D(pool_size=(2,2)),
+        Dropout(0.25),
+
+        Conv2D(64, kernel_size = (3,3), padding = 'same', activation=tf.nn.relu),
+        MaxPooling2D(pool_size=(2,2)),
+        Dropout(0.25),
+        
+        Flatten(),
+        Dense(64, activation=tf.nn.relu),
+        Dropout(0.25),
+        Dense(num_classes, activation=tf.nn.softmax)
+    ])
+</code>
+
+<code>
+
+    model.compile(
+        loss='categorical_crossentropy',
+        optimizer = 'adam',
+        metrics=['accuracy']
+    )<
+</code>
+
+<code>
+
+    early_stopping=EarlyStopping(monitor='val_loss', patience=30)
+
+    history = model.fit(
+        train_images, train_labels,
+        epochs=epochs,
+        validation_data=(test_images, test_labels),
+        shuffle=True,
+        callbacks=[early_stopping]
+    )
+</code>
+
+35까지 학습 완료 (최대 50)</br>
+Loss : 0.38273733854293823, Acc : 0.921875</br>
+
+<img width="270" alt="datagenImage2결과(patience=20)" src="https://user-images.githubusercontent.com/77331459/205564753-0a10c105-c897-466a-9205-afb2cf4d8f00.png">
+
+<img width="441" alt="datagenImage2검증(patience=20)" src="https://user-images.githubusercontent.com/77331459/205564767-ff55c2d3-d4a8-40ea-bdc1-892d98150114.png">
+
+
+#
+
+- datagenImage2
+
+- epoch 50 , patience = 30</br>
+batchsize 4 </br>
+
+훈련용
+<code>
+
+    datagen = ImageDataGenerator(
+    featurewise_center = True)
+
+    datagen.flow_from_directory(
+    'C:\\vsCode\\PillProject\\imageT\\color\\test', 
+    shuffle = True, 
+    target_size=(256,256), 
+    batch_size=batch_size, 
+    class_mode = 'categorical')
+</code>
+
+테스트용(경로 제외 위와 동일)</br>
+C:\\vsCode\\PillProject\\imageT\\color\\train</br>
+
+num_classes = 5</br>
+epochs = 50</br>
+
+<img width="370" alt="datagenImage2학습이미지(patience = 30)" src="https://user-images.githubusercontent.com/77331459/205564801-139e2d6a-954c-4bb2-89bd-6bc7a8867203.png">
+
+신경망 구성
+
+<code>
+
+    model = keras.Sequential([
+        Conv2D(32, kernel_size = (3,3), padding = 'same', input_shape = train_images.shape[1:],
+            activation=tf.nn.relu),
+        MaxPooling2D(pool_size=(2,2)),
+        Dropout(0.25),
+
+        Conv2D(64, kernel_size = (3,3), padding = 'same', activation=tf.nn.relu),
+        MaxPooling2D(pool_size=(2,2)),
+        Dropout(0.25),
+        
+        Flatten(),
+        Dense(64, activation=tf.nn.relu),
+        Dropout(0.25),
+        Dense(num_classes, activation=tf.nn.softmax)
+    ])
+</code>
+
+<code>
+
+    model.compile(
+        loss='categorical_crossentropy',
+        optimizer = 'adam',
+        metrics=['accuracy']
+    )<
+</code>
+
+<code>
+
+    early_stopping=EarlyStopping(monitor='val_loss', patience=30)
+
+    history = model.fit(
+        train_images, train_labels,
+        epochs=epochs,
+        validation_data=(test_images, test_labels),
+        shuffle=True,
+        callbacks=[early_stopping]
+    )
+</code>
+
+50까지 학습 완료 (최대 50)</br>
+Loss : 0.10279396176338196, Acc : 0.953125</br>
+
+<img width="267" alt="datagenImage2결과(patience=30)" src="https://user-images.githubusercontent.com/77331459/205564843-c8d2d900-d0bf-4a5a-a9f3-a753319f9584.png">
+
+<img width="468" alt="datagenImage2검증(patience=30)" src="https://user-images.githubusercontent.com/77331459/205564865-b575dfc7-3d21-4941-8d24-88d37f21bdca.png">
+
 
 # Shape  
 color와 동일한 cnn모델을 사용하였음
+
+테스트 평가
+#
+
+epoch 5000  |  patience 100</br>
+
+batch_size = 4</br>
+#생성시에 파라미터를 설정하면 어떻게 augmentation를 진행할지 지정할 수 있다.</br>
+<code>
+
+    datagen = ImageDataGenerator(
+        featurewise_center = True)
+</code>
+
+테스트용</br>
+
+<code>
+
+    #경로, 셔플, 이미지사이즈, 한번에 읽어올 이미지 수, 클래스 모드
+    generator = datagen.flow_from_directory(
+        'C:\\vsCode\\PillProject\\imageT\\shape\\test', 
+        shuffle = True, 
+        target_size=(256,256), 
+        batch_size=batch_size, 
+        class_mode = 'categorical',
+        color_mode='grayscale')
+    훈련용(경로만 다름)
+    C:\\vsCode\\PillProject\\imageT\\shape\\train
+
+    class_names = ['circle', 'hexagon', 'pentagon', 'rectangle', 'rectangular', 'triangle']
+</code>
+
+<img width="366" alt="shapeDatagenImage1학습이미지(patience = 100)" src="https://user-images.githubusercontent.com/77331459/205568304-b21fb1b0-7542-44fe-ad87-db7da1fb1fd9.png">
+
+#배치 사이즈의 수만큼 이미지를 학습하고 가중치를 갱신하게된다.</br>
+#배치 사이즈를 증가시키면 필요한 메모리가 증가하나 모델을 훈련하는데 시간이 적게 든다.</br>
+#배치 사이즈를 감소시키면 필요한 메모리가 감소하나 모델을 훈련하는데 시간이 많이 든다.</br>
+batch_size = 64</br>
+#분류될 클래스 개수</br>
+num_classes = 6</br>
+#몇번 학습을 반복할 것인지 결정</br>
+#에포크가 많다면 과적합 문제 발생가능, 적다면 분류를 제대로 못할 수 있다.</br>
+epochs = 5000</br>
+
+#모델 구성
+<code>
+
+    model = keras.Sequential([
+        Conv2D(32, kernel_size = (3,3), padding = 'same', input_shape = train_images.shape[1:],
+            activation=tf.nn.relu),
+        MaxPooling2D(pool_size=(2,2)),
+        Dropout(0.25),
+        
+        Conv2D(64, kernel_size = (3,3), padding = 'same', activation=tf.nn.relu),
+        MaxPooling2D(pool_size=(2,2)),
+        Dropout(0.25),
+        
+        Flatten(),
+        Dense(64, activation=tf.nn.relu),
+        Dropout(0.25),
+        Dense(num_classes, activation=tf.nn.softmax)
+    ])
+</code>
+
+#모델을 학습시키기 전 환경 설정 (정규화기, 손실함수, 평가지표)</br>
+
+#정규화기 - 훈련과정을 설정합니다. 즉, 최적화 알고리즘을 설정을 의미합니다.</br>
+#adam, sgd, rmsprop, adagrad 등이 있습니다.</br>
+#분류에는  ‘SGD’, ‘Adam’, ‘RMSprop’</br>
+
+#손실함수 - 모델이 최적화에 사용되는 목적 함수입니다.</br>
+#mse, categorical_crossentropy, binary_crossentropy 등이 있습니다.</br>
+
+#평가지표 - 훈련을 모니터링 하기 위해 사용됩니다.</br>
+#분류에서는 accuracy, 회귀에서는 mse, rmse, r2, mae, mspe, mape, msle 등이 있습니다.</br>
+#사용자가 메트릭을 정의해서 사용할 수도 있습니다.</br>
+
+<code>
+
+    model.compile(
+        loss='categorical_crossentropy',
+        optimizer = 'adam',
+        metrics=['accuracy']
+    )
+</code>
+
+#과적합을 방지하기 위해서 설정</br>
+#Early Stopping 이란 너무 많은 Epoch 은 overfitting 을 일으킨다. 하지만 너무 적은 Epoch 은 underfitting 을 일으킨다. </br>
+#라는 딜레마를 해결하기위함</br>
+
+#Epoch 을 정하는데 많이 사용되는 Early stopping 은 무조건 Epoch 을 많이 돌린 후, 특정 시점에서 멈추는 것이다. </br>
+#그 특정시점을 어떻게 정하느냐가 Early stopping 의 핵심이라고 할 수 있다. </br>
+#일반적으로 hold-out validation set 에서의 성능이 더이상 증가하지 않을 때 학습을 중지</br>
+#https://3months.tistory.com/424 참고</br>
+
+<code>
+
+    early_stopping=EarlyStopping(monitor='val_loss', patience=100)
+    #ModelCheckpoint instance를 callbacks 파라미터에 넣어줌으로써, 가장 validation performance 가 좋았던 모델을 저장할 수 있게된다.
+    mc = ModelCheckpoint('best_model.h5', monitor='val_loss', mode='min', save_best_only=True)
+
+    history = model.fit(
+        train_images, train_labels,
+        epochs=epochs,
+        validation_data=(test_images, test_labels),
+        shuffle=True,
+        # 콜백을 적용하면 과적합을 방지하는지는 잘 모르겠음.
+        # 다만, 적용시키면 훈련을 12~20번 사이로 하고 그냥 에포크 상관없이 훈련을 중지함.
+        callbacks=[early_stopping,mc]
+    )
+</code>
+
+119 까지만 학습 (최대 5000)</br>
+Loss : 4.203685283660889, Acc : 0.5714285969734192</br>
+
+<img width="267" alt="shapeDatagenImage1결과(patience = 100)" src="https://user-images.githubusercontent.com/77331459/205568319-e5876d66-b066-4396-a993-10d3c7638135.png">
+
+<img width="476" alt="shapeDatagenImage1검증(patience = 100)" src="https://user-images.githubusercontent.com/77331459/205568331-fe73dc87-0817-44b4-bd22-46755b7d734c.png">
+
+#
+
+epoch 5000  |  patience 50</br>
+
+batch_size = 4</br>
+#생성시에 파라미터를 설정하면 어떻게 augmentation를 진행할지 지정할 수 있다.</br>
+<code>
+
+    datagen = ImageDataGenerator(
+        featurewise_center = True)
+</code>
+
+테스트용</br>
+
+<code>
+
+    #경로, 셔플, 이미지사이즈, 한번에 읽어올 이미지 수, 클래스 모드
+    generator = datagen.flow_from_directory(
+        'C:\\vsCode\\PillProject\\imageT\\shape\\test', 
+        shuffle = True, 
+        target_size=(256,256), 
+        batch_size=batch_size, 
+        class_mode = 'categorical',
+        color_mode='grayscale')
+    훈련용(경로만 다름)
+    C:\\vsCode\\PillProject\\imageT\\shape\\train
+
+    class_names = ['circle', 'hexagon', 'pentagon', 'rectangle', 'rectangular', 'triangle']
+</code>
+
+<img width="379" alt="shapeDatagenImage1학습이미지(patience = 50)" src="https://user-images.githubusercontent.com/77331459/205567847-482f8737-d5fa-4b1c-ab45-1ce391dc1b9e.png">
+
+#배치 사이즈의 수만큼 이미지를 학습하고 가중치를 갱신하게된다.</br>
+#배치 사이즈를 증가시키면 필요한 메모리가 증가하나 모델을 훈련하는데 시간이 적게 든다.</br>
+#배치 사이즈를 감소시키면 필요한 메모리가 감소하나 모델을 훈련하는데 시간이 많이 든다.</br>
+batch_size = 64</br>
+#분류될 클래스 개수</br>
+num_classes = 6</br>
+#몇번 학습을 반복할 것인지 결정</br>
+#에포크가 많다면 과적합 문제 발생가능, 적다면 분류를 제대로 못할 수 있다.</br>
+epochs = 5000</br>
+
+#모델 구성
+<code>
+
+    model = keras.Sequential([
+        Conv2D(32, kernel_size = (3,3), padding = 'same', input_shape = train_images.shape[1:],
+            activation=tf.nn.relu),
+        MaxPooling2D(pool_size=(2,2)),
+        Dropout(0.25),
+        
+        Conv2D(64, kernel_size = (3,3), padding = 'same', activation=tf.nn.relu),
+        MaxPooling2D(pool_size=(2,2)),
+        Dropout(0.25),
+        
+        Flatten(),
+        Dense(64, activation=tf.nn.relu),
+        Dropout(0.25),
+        Dense(num_classes, activation=tf.nn.softmax)
+    ])
+</code>
+
+#모델을 학습시키기 전 환경 설정 (정규화기, 손실함수, 평가지표)</br>
+
+#정규화기 - 훈련과정을 설정합니다. 즉, 최적화 알고리즘을 설정을 의미합니다.</br>
+#adam, sgd, rmsprop, adagrad 등이 있습니다.</br>
+#분류에는  ‘SGD’, ‘Adam’, ‘RMSprop’</br>
+
+#손실함수 - 모델이 최적화에 사용되는 목적 함수입니다.</br>
+#mse, categorical_crossentropy, binary_crossentropy 등이 있습니다.</br>
+
+#평가지표 - 훈련을 모니터링 하기 위해 사용됩니다.</br>
+#분류에서는 accuracy, 회귀에서는 mse, rmse, r2, mae, mspe, mape, msle 등이 있습니다.</br>
+#사용자가 메트릭을 정의해서 사용할 수도 있습니다.</br>
+
+<code>
+
+    model.compile(
+        loss='categorical_crossentropy',
+        optimizer = 'adam',
+        metrics=['accuracy']
+    )
+</code>
+
+#과적합을 방지하기 위해서 설정</br>
+#Early Stopping 이란 너무 많은 Epoch 은 overfitting 을 일으킨다. 하지만 너무 적은 Epoch 은 underfitting 을 일으킨다. </br>
+#라는 딜레마를 해결하기위함</br>
+
+#Epoch 을 정하는데 많이 사용되는 Early stopping 은 무조건 Epoch 을 많이 돌린 후, 특정 시점에서 멈추는 것이다. </br>
+#그 특정시점을 어떻게 정하느냐가 Early stopping 의 핵심이라고 할 수 있다. </br>
+#일반적으로 hold-out validation set 에서의 성능이 더이상 증가하지 않을 때 학습을 중지</br>
+#https://3months.tistory.com/424 참고</br>
+
+<code>
+
+    early_stopping=EarlyStopping(monitor='val_loss', patience=50)
+    #ModelCheckpoint instance를 callbacks 파라미터에 넣어줌으로써, 가장 validation performance 가 좋았던 모델을 저장할 수 있게된다.
+    mc = ModelCheckpoint('best_model.h5', monitor='val_loss', mode='min', save_best_only=True)
+
+    history = model.fit(
+        train_images, train_labels,
+        epochs=epochs,
+        validation_data=(test_images, test_labels),
+        shuffle=True,
+        # 콜백을 적용하면 과적합을 방지하는지는 잘 모르겠음.
+        # 다만, 적용시키면 훈련을 12~20번 사이로 하고 그냥 에포크 상관없이 훈련을 중지함.
+        callbacks=[early_stopping,mc]
+    )
+</code>
+
+119 까지만 학습 (최대 5000)</br>
+Loss : 4.203685283660889, Acc : 0.5714285969734192</br>
+
+<img width="275" alt="shapeDatagenImage1결과(patience = 50)" src="https://user-images.githubusercontent.com/77331459/205567857-b39c44eb-e9e5-4aeb-8722-e19768207f47.png">
+
+<img width="461" alt="shapeDatagenImage1검증(patience = 50)" src="https://user-images.githubusercontent.com/77331459/205567868-e0f25d31-cce9-4db9-8383-b6472402189b.png">
 
 # String  
 ![다운로드 (3)](https://user-images.githubusercontent.com/77331459/194784410-d8690c98-46e6-429f-8125-36897550d5d6.png)  
